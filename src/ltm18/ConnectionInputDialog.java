@@ -194,6 +194,8 @@ public class ConnectionInputDialog extends javax.swing.JDialog {
                 Server.PORT = port;
                 this.mainForm.lblPort.setText(String.valueOf(port));
                 this.dispose();
+            }else{
+                this.lblThongBao.setText("Lỗi! Port phải nằm trong khoảng [0, 65535]");
             }
         } catch (NumberFormatException ex) {
             this.lblThongBao.setText("Vui lòng nhập Port hợp lệ");
