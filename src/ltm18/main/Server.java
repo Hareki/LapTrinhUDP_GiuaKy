@@ -19,7 +19,6 @@ import ltm18.StringUtils;
 public class Server {
 
     public static int PORT = 8888;
-    public static int test = 8888;
     private static DatagramPacket inPacket;
     private static DatagramPacket outPacket;
 
@@ -73,9 +72,9 @@ public class Server {
 
                 int key = Integer.parseInt(receiveData(socketServer));
                 System.out.println("key = " + key);
-                if (key == -1) {//yêu cầu refresh port
-                    PORT = Integer.parseInt(receiveData(socketServer));
-                    System.out.println("reset, new port: " + PORT);
+                if (key == -1) {//test kết nối
+                    System.out.println("đã nhận tín hiệu test");
+                    sendData(socketServer, "Success!");
                     continue;
                 }
                 int soMau = Integer.parseInt(receiveData(socketServer));

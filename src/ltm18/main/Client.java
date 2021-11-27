@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.font.TextAttribute;
@@ -16,11 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -39,7 +37,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import ltm18.Caeser;
 import ltm18.ConnectionInputDialog;
 import ltm18.StringUtils;
-import static ltm18.main.Server.PORT;
 
 /**
  *
@@ -54,21 +51,25 @@ public class Client extends javax.swing.JFrame {
     private static final Color VERY_LIGHT_YELLOW = new Color(255, 255, 204);
     private static final Border LABEL_BORDER = BorderFactory.createLineBorder(Color.darkGray, BORDER_GAP);
 
-    public static String stringIPA = "localhost";
+    public static String STRING_IPA;
+    public static int SERVER_PORT;
 
-    public Client() {
+    public Client(String stringIPA, int serverPort) {
         initComponents();
         this.setLocationRelativeTo(null);
         areaMaHoa.requestFocus();
         setHyperLinkFormat(lblXemDe);
         setHyperLinkFormat(lbHyper);
-        setHyperLinkFormat(lblDoi);
         lblThongBao.setText("  ");
         this.getContentPane().setBackground(new Color(245, 245, 245));
-
+        
+        Client.STRING_IPA = stringIPA;
+        Client.SERVER_PORT = serverPort;
+        
         this.lblIP.setText(stringIPA);
-        this.lblPort.setText(String.valueOf(Server.PORT));
-
+        this.lblPort.setText(String.valueOf(Client.SERVER_PORT));
+        
+        this.setIconImage(new javax.swing.ImageIcon(getClass().getResource("/img/data-server.png")).getImage());
     }
 
     private String deBai = "Xây chương trình giao diện socket client – server bằng java với giao thức UDP mã hóa và giải mã văn bản với thuật toán mã hóa Ceasar. "
@@ -133,9 +134,9 @@ public class Client extends javax.swing.JFrame {
         lblIP = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         lblPort = new javax.swing.JLabel();
-        lblDoi = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Đề tài 18");
         setMinimumSize(new java.awt.Dimension(888, 980));
         setSize(new java.awt.Dimension(888, 980));
 
@@ -379,23 +380,6 @@ public class Client extends javax.swing.JFrame {
         lblPort.setText("8080");
         jPanel3.add(lblPort);
 
-        lblDoi.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        lblDoi.setForeground(new java.awt.Color(175, 255, 244));
-        lblDoi.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblDoi.setText("Đổi");
-        lblDoi.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                lblDoiMouseClicked(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                lblDoiMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                lblDoiMouseExited(evt);
-            }
-        });
-        jPanel3.add(lblDoi);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -460,7 +444,7 @@ public class Client extends javax.swing.JFrame {
     private void sendData(DatagramSocket clientSocket, InetAddress ip, String data) throws IOException {
         System.out.println("send to IP: " + ip.toString());
         byte[] mang = data.getBytes();
-        DatagramPacket output = new DatagramPacket(mang, mang.length, ip, Server.PORT);
+        DatagramPacket output = new DatagramPacket(mang, mang.length, ip, Client.SERVER_PORT);
         clientSocket.send(output);
     }
 
@@ -471,7 +455,6 @@ public class Client extends javax.swing.JFrame {
         clientSocket.receive(dataPacket);
         String ketQua = new String(dataPacket.getData(), 0, dataPacket.getLength());
         return ketQua;
-
     }
 
     private void sendLargeData(DatagramSocket clientSocket, InetAddress ip, String largeData) throws IOException {
@@ -582,7 +565,7 @@ public class Client extends javax.swing.JFrame {
             setLblThongBaoState(Message.processing);
 
             try (DatagramSocket clientSocket = new DatagramSocket()) {
-                InetAddress serverIP = InetAddress.getByName(stringIPA);
+                InetAddress serverIP = InetAddress.getByName(STRING_IPA);
                 // chuyển khoá đi trước
                 sendData(clientSocket, serverIP, key.toString());
                 // chuyển tiếng việt (nếu có) thành không dấu
@@ -686,56 +669,6 @@ public class Client extends javax.swing.JFrame {
         setLblThongBaoState(Message.copied);
     }//GEN-LAST:event_btnLamMoiKetQua1ActionPerformed
 
-    private void sendDataSpecificID(DatagramSocket clientSocket, InetAddress ip, String data, int port) throws IOException {
-        byte[] mang = data.getBytes();
-        DatagramPacket output = new DatagramPacket(mang, mang.length, ip, port);
-        clientSocket.send(output);
-    }
-    private void lblDoiMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDoiMouseClicked
-        String savePort = lblPort.getText();
-        String saveIP = lblIP.getText();
-        new ConnectionInputDialog(this, true).setVisible(true);
-        if (!savePort.equals(lblPort.getText())) {
-            DatagramSocket clientSocket = null;
-            try {
-                clientSocket = new DatagramSocket();
-                InetAddress serverIP = InetAddress.getByName(saveIP);
-                InetAddress serverIP2 = InetAddress.getByName(stringIPA);
-                System.out.println("vào try");
-                //gửi tín hiệu chuyển port
-                sendDataSpecificID(clientSocket, serverIP, "-1", Integer.parseInt(savePort));
-                //gửi port mới, do Server.PORT = <port mới> không hoạt động... (do vẫn nằm trong hàm main)
-                sendDataSpecificID(clientSocket, serverIP, lblPort.getText(), Integer.parseInt(savePort));
-
-                //gửi cho cả 2 IP cũ và mới, phòng trường hợp hoặc IP cũ hoặc IP mới là ko thể kết nối, 
-                //dẫn đến bất đồng bộ port
-                if (!serverIP.equals(serverIP2)) {
-                    sendDataSpecificID(clientSocket, serverIP2, "-1", Integer.parseInt(savePort));
-                    sendDataSpecificID(clientSocket, serverIP2, lblPort.getText(), Integer.parseInt(savePort));
-                }
-
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            } finally {
-                try {
-                    clientSocket.close();
-                } catch (NullPointerException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        }
-
-
-    }//GEN-LAST:event_lblDoiMouseClicked
-
-    private void lblDoiMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDoiMouseEntered
-        lblDoi.setForeground(hoverColor2);
-    }//GEN-LAST:event_lblDoiMouseEntered
-
-    private void lblDoiMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDoiMouseExited
-        lblDoi.setForeground(idleColor2);
-    }//GEN-LAST:event_lblDoiMouseExited
-
     /**
      * @param args the command line arguments
      */
@@ -767,7 +700,7 @@ public class Client extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Client().setVisible(true);
+                new ConnectionInputDialog(null, false).setVisible(true);
             }
         });
     }
@@ -793,7 +726,6 @@ public class Client extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lbHyper;
-    private javax.swing.JLabel lblDoi;
     public javax.swing.JLabel lblIP;
     public javax.swing.JLabel lblPort;
     private javax.swing.JLabel lblThongBao;
