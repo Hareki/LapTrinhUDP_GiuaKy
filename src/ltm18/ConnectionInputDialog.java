@@ -6,6 +6,7 @@
 package ltm18;
 
 import java.awt.Cursor;
+import java.awt.Dialog;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -34,7 +35,13 @@ public class ConnectionInputDialog extends javax.swing.JDialog {
             this.mainForm = (Client) parent;
         }
         this.setLocationRelativeTo(null);
-        this.setIconImage(new javax.swing.ImageIcon(getClass().getResource("/img/data-server.png")).getImage());
+        this.setIconImage(new javax.swing.ImageIcon(getClass().getResource("/img/client.png")).getImage());
+    }
+    public ConnectionInputDialog() {
+        super((Dialog)null);
+        initComponents();
+        this.setLocationRelativeTo(null);
+        this.setIconImage(new javax.swing.ImageIcon(getClass().getResource("/img/client.png")).getImage());
     }
 
     /**
@@ -184,8 +191,9 @@ private void sendData(DatagramSocket clientSocket, InetAddress ip, String data, 
                 JOptionPane.ERROR_MESSAGE,
                 new javax.swing.ImageIcon(getClass().getResource("/img/error.png")));
     }
-    private void connect(){
-          //check IP hợp lệ
+
+    private void connect() {
+        //check IP hợp lệ
         this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         Pattern patternIP = Pattern.compile("^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\\.(?!$)|$)){4}$");
         String stringIPA = textIP.getText().trim();
@@ -215,10 +223,9 @@ private void sendData(DatagramSocket clientSocket, InetAddress ip, String data, 
                 this.dispose();
                 if (this.isModal() && this.mainForm != null) {
                     this.mainForm.refreshConnection(stringIPA, port);
-                }else{
+                } else {
                     new Client(textIP.getText(), port).setVisible(true);
                 }
-                
 
             } else {
                 showErrorMessage("Port không hợp lệ", "Port phải nằm trong khoảng [0, 65535]");
@@ -232,7 +239,7 @@ private void sendData(DatagramSocket clientSocket, InetAddress ip, String data, 
         }
     }
     private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
-      this.connect();
+        this.connect();
     }//GEN-LAST:event_btnOKActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed

@@ -6,9 +6,9 @@ package ltm18.main;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dialog;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.font.TextAttribute;
@@ -70,7 +70,7 @@ public class Client extends javax.swing.JFrame {
         this.lblIP.setText(stringIPA);
         this.lblPort.setText(String.valueOf(Client.SERVER_PORT));
 
-        this.setIconImage(new javax.swing.ImageIcon(getClass().getResource("/img/data-server.png")).getImage());
+        this.setIconImage(new javax.swing.ImageIcon(getClass().getResource("/img/client.png")).getImage());
     }
 
     public void refreshConnection(String stringIPA, int serverPort) {
@@ -104,7 +104,7 @@ public class Client extends javax.swing.JFrame {
     private static final Color idleColor2 = new Color(175, 255, 244);
 
     private enum Message {
-        serverError, success, processing, copied, fileError
+        serverError, success, processing, copied1, fileError, copied2
     }
 
     private enum DialogMessage {
@@ -150,6 +150,7 @@ public class Client extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         areaVanBan = new javax.swing.JTextArea();
+        btnCopy1 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         panelLower = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
@@ -159,7 +160,7 @@ public class Client extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         areaMaHoa = new javax.swing.JTextArea();
         panelUpper = new javax.swing.JPanel();
-        btnLamMoiKetQua1 = new javax.swing.JButton();
+        btnCopy2 = new javax.swing.JButton();
         lblThongBao = new javax.swing.JLabel();
         lblXemDe = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
@@ -170,7 +171,7 @@ public class Client extends javax.swing.JFrame {
         lblDoi = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Đề tài 18");
+        setTitle("Client");
         setMinimumSize(new java.awt.Dimension(888, 980));
         setSize(new java.awt.Dimension(888, 980));
 
@@ -237,6 +238,16 @@ public class Client extends javax.swing.JFrame {
         areaVanBan.setWrapStyleWord(true);
         jScrollPane3.setViewportView(areaVanBan);
 
+        btnCopy1.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        btnCopy1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/copy.png"))); // NOI18N
+        btnCopy1.setText("Copy");
+        btnCopy1.setFocusPainted(false);
+        btnCopy1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCopy1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -258,6 +269,8 @@ public class Client extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel6)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnCopy1)
+                                .addGap(18, 18, 18)
                                 .addComponent(btnChonFile))
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 700, Short.MAX_VALUE))))
                 .addGap(43, 43, 43))
@@ -266,14 +279,16 @@ public class Client extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(24, 24, 24)
-                        .addComponent(jLabel6))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(btnChonFile)))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(btnCopy1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGap(24, 24, 24)
+                            .addComponent(jLabel6)))
+                    .addComponent(btnChonFile, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnGiai, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -320,13 +335,13 @@ public class Client extends javax.swing.JFrame {
 
         panelUpper.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(130, 135, 144)));
 
-        btnLamMoiKetQua1.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
-        btnLamMoiKetQua1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/copy.png"))); // NOI18N
-        btnLamMoiKetQua1.setText("Copy");
-        btnLamMoiKetQua1.setFocusPainted(false);
-        btnLamMoiKetQua1.addActionListener(new java.awt.event.ActionListener() {
+        btnCopy2.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        btnCopy2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/copy.png"))); // NOI18N
+        btnCopy2.setText("Copy");
+        btnCopy2.setFocusPainted(false);
+        btnCopy2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLamMoiKetQua1ActionPerformed(evt);
+                btnCopy2ActionPerformed(evt);
             }
         });
 
@@ -345,7 +360,7 @@ public class Client extends javax.swing.JFrame {
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnLamMoiKetQua1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(btnCopy2, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(panelUpper, javax.swing.GroupLayout.DEFAULT_SIZE, 700, Short.MAX_VALUE)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 700, Short.MAX_VALUE)
                             .addComponent(jLabel3)
@@ -357,10 +372,10 @@ public class Client extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btnLamMoiKetQua1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCopy2, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -491,8 +506,12 @@ public class Client extends javax.swing.JFrame {
                 lblThongBao.setText("Nhận kết quả từ server thành công!");
                 lblThongBao.setForeground(successColor);
                 break;
-            case copied:
+            case copied1:
                 lblThongBao.setText("Đã sao chép toàn bộ văn bản mã hóa vào bộ nhớ trong.");
+                lblThongBao.setForeground(successColor);
+                break;
+            case copied2:
+                lblThongBao.setText("Đã sao chép toàn bộ văn bản rõ vào bộ nhớ trong.");
                 lblThongBao.setForeground(successColor);
                 break;
         }
@@ -697,7 +716,7 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_lbHyperMouseExited
 
     private void lbHyperMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbHyperMouseClicked
-       this.showMessage(DialogMessage.info, quyTacMaHoa, "Quy tắc mã hóa");
+        this.showMessage(DialogMessage.info, quyTacMaHoa, "Quy tắc mã hóa");
     }//GEN-LAST:event_lbHyperMouseClicked
 
     private void lblXemDeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblXemDeMouseClicked
@@ -713,15 +732,15 @@ public class Client extends javax.swing.JFrame {
         lblXemDe.setForeground(idleColor);
     }//GEN-LAST:event_lblXemDeMouseExited
 
-    private void btnLamMoiKetQua1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLamMoiKetQua1ActionPerformed
+    private void btnCopy2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCopy2ActionPerformed
         Toolkit.getDefaultToolkit()
                 .getSystemClipboard()
                 .setContents(
                         new StringSelection(areaMaHoa.getText()),
                         null
                 );
-        setLblThongBaoState(Message.copied);
-    }//GEN-LAST:event_btnLamMoiKetQua1ActionPerformed
+        setLblThongBaoState(Message.copied1);
+    }//GEN-LAST:event_btnCopy2ActionPerformed
 
     private void lblDoiMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDoiMouseClicked
         new ConnectionInputDialog(this, true).setVisible(true);
@@ -734,6 +753,16 @@ public class Client extends javax.swing.JFrame {
     private void lblDoiMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDoiMouseExited
         lblDoi.setForeground(idleColor);
     }//GEN-LAST:event_lblDoiMouseExited
+
+    private void btnCopy1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCopy1ActionPerformed
+        Toolkit.getDefaultToolkit()
+                .getSystemClipboard()
+                .setContents(
+                        new StringSelection(areaVanBan.getText()),
+                        null
+                );
+        setLblThongBaoState(Message.copied1);
+    }//GEN-LAST:event_btnCopy1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -766,7 +795,7 @@ public class Client extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ConnectionInputDialog(null, false).setVisible(true);
+                new ConnectionInputDialog().setVisible(true);
             }
         });
     }
@@ -775,9 +804,10 @@ public class Client extends javax.swing.JFrame {
     private javax.swing.JTextArea areaMaHoa;
     private javax.swing.JTextArea areaVanBan;
     private javax.swing.JButton btnChonFile;
+    private javax.swing.JButton btnCopy1;
+    private javax.swing.JButton btnCopy2;
     private javax.swing.JButton btnGiai;
     private javax.swing.JButton btnLamMoiKetQua;
-    private javax.swing.JButton btnLamMoiKetQua1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
