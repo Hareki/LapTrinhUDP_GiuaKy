@@ -181,7 +181,7 @@ private void sendData(DatagramSocket clientSocket, InetAddress ip, String data, 
         JOptionPane.showMessageDialog(this,
                 message,
                 title,
-                JOptionPane.INFORMATION_MESSAGE,
+                JOptionPane.ERROR_MESSAGE,
                 new javax.swing.ImageIcon(getClass().getResource("/img/error.png")));
     }
     private void connect(){

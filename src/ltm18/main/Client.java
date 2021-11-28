@@ -63,20 +63,20 @@ public class Client extends javax.swing.JFrame {
         setHyperLinkFormat(lblDoi);
         lblThongBao.setText("  ");
         this.getContentPane().setBackground(new Color(245, 245, 245));
-        
+
         Client.STRING_IPA = stringIPA;
         Client.SERVER_PORT = serverPort;
-        
+
         this.lblIP.setText(stringIPA);
         this.lblPort.setText(String.valueOf(Client.SERVER_PORT));
-        
+
         this.setIconImage(new javax.swing.ImageIcon(getClass().getResource("/img/data-server.png")).getImage());
     }
-    
-    public void refreshConnection(String stringIPA, int serverPort){
+
+    public void refreshConnection(String stringIPA, int serverPort) {
         Client.STRING_IPA = stringIPA;
         Client.SERVER_PORT = serverPort;
-        
+
         this.lblIP.setText(stringIPA);
         this.lblPort.setText(String.valueOf(Client.SERVER_PORT));
     }
@@ -103,8 +103,32 @@ public class Client extends javax.swing.JFrame {
     private static final Color hoverColor2 = new Color(170, 211, 255);
     private static final Color idleColor2 = new Color(175, 255, 244);
 
-    public enum Message {
-        error, success, processing, copied
+    private enum Message {
+        serverError, success, processing, copied, fileError
+    }
+
+    private enum DialogMessage {
+        info, error
+    }
+
+    private void showMessage(DialogMessage type, String message, String title) {
+        switch (type) {
+            case info:
+                JOptionPane.showMessageDialog(this,
+                        message,
+                        title,
+                        JOptionPane.INFORMATION_MESSAGE,
+                        new javax.swing.ImageIcon(getClass().getResource("/img/infor.png")));
+                break;
+            case error:
+                JOptionPane.showMessageDialog(this,
+                        message,
+                        title,
+                        JOptionPane.ERROR_MESSAGE,
+                        new javax.swing.ImageIcon(getClass().getResource("/img/error.png")));
+                break;
+        }
+
     }
 
     /**
@@ -370,7 +394,7 @@ public class Client extends javax.swing.JFrame {
             }
         });
 
-        jPanel3.setBackground(new java.awt.Color(190, 190, 190));
+        jPanel3.setBackground(new java.awt.Color(170, 170, 170));
         jPanel3.setForeground(new java.awt.Color(227, 227, 227));
         jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
 
@@ -451,8 +475,12 @@ public class Client extends javax.swing.JFrame {
     public void setLblThongBaoState(Message state) {
 
         switch (state) {
-            case error:
+            case serverError:
                 lblThongBao.setText("Xảy ra lỗi! Server chưa được khởi động, sai thông tin kết nối (IP, Port) hoặc lỗi không xác định");
+                lblThongBao.setForeground(errorColor);
+                break;
+            case fileError:
+                lblThongBao.setText("Hiện tại không thể mở file này, vui lòng thử lại sau");
                 lblThongBao.setForeground(errorColor);
                 break;
             case processing:
@@ -582,11 +610,7 @@ public class Client extends javax.swing.JFrame {
             this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             String vanBan = areaVanBan.getText().trim();
             if (vanBan.isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                        "Vui lòng nhập văn bản!",
-                        "Thông báo",
-                        JOptionPane.INFORMATION_MESSAGE,
-                        new javax.swing.ImageIcon(getClass().getResource("/img/infor.png")));
+                this.showMessage(DialogMessage.info, "Vui lòng nhập văn bản", "Thông báo");
                 return;
             }
             Integer key = (Integer) spinKey.getValue();
@@ -615,7 +639,7 @@ public class Client extends javax.swing.JFrame {
             }
 
         } catch (SocketTimeoutException ex) {
-            setLblThongBaoState(Message.error);
+            setLblThongBaoState(Message.serverError);
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -637,7 +661,9 @@ public class Client extends javax.swing.JFrame {
                 String allText = new String(allBytes, StandardCharsets.UTF_8);
                 areaVanBan.setText(allText);
             } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                this.setLblThongBaoState(Message.fileError);
+
+                this.showMessage(DialogMessage.error, ex.getMessage(), "Lỗi đọc file");
             }
         }
     }//GEN-LAST:event_btnChonFileActionPerformed
@@ -671,14 +697,12 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_lbHyperMouseExited
 
     private void lbHyperMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbHyperMouseClicked
-        JOptionPane.showMessageDialog(this, quyTacMaHoa,
-                "Quy tắc mã hóa", JOptionPane.INFORMATION_MESSAGE, new javax.swing.ImageIcon(getClass().getResource("/img/infor.png")));
+       this.showMessage(DialogMessage.info, quyTacMaHoa, "Quy tắc mã hóa");
     }//GEN-LAST:event_lbHyperMouseClicked
 
     private void lblXemDeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblXemDeMouseClicked
 
-        JOptionPane.showMessageDialog(this, deBai,
-                "Đề 18", JOptionPane.INFORMATION_MESSAGE, new javax.swing.ImageIcon(getClass().getResource("/img/infor.png")));
+        this.showMessage(DialogMessage.info, deBai, "Đề 18");
     }//GEN-LAST:event_lblXemDeMouseClicked
 
     private void lblXemDeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblXemDeMouseEntered
