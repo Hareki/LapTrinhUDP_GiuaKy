@@ -6,8 +6,7 @@
 package ltm18;
 
 import java.awt.Cursor;
-import java.awt.Image;
-import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -26,11 +25,14 @@ public class ConnectionInputDialog extends javax.swing.JDialog {
     /**
      * Creates new form ConnectionInputDialog
      */
-    private Client mainForm;
+    private Client mainForm = null;
 
     public ConnectionInputDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        if (parent != null) {
+            this.mainForm = (Client) parent;
+        }
         this.setLocationRelativeTo(null);
         this.setIconImage(new javax.swing.ImageIcon(getClass().getResource("/img/data-server.png")).getImage());
     }
@@ -50,12 +52,11 @@ public class ConnectionInputDialog extends javax.swing.JDialog {
         textIP = new javax.swing.JTextField();
         textPort = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
         btnOK = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Đề tài 18");
+        setTitle("Kết nối mới");
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -67,8 +68,18 @@ public class ConnectionInputDialog extends javax.swing.JDialog {
         jLabel2.setText("Nhập địa chỉ IP của Server");
 
         textIP.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        textIP.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                textIPKeyPressed(evt);
+            }
+        });
 
         textPort.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        textPort.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                textPortKeyPressed(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel3.setText("Nhập cổng kết nối của Server");
@@ -102,30 +113,28 @@ public class ConnectionInputDialog extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(textPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addGap(18, 18, 18))
         );
-
-        jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 26, 5));
 
         btnOK.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         btnOK.setText("OK");
-        btnOK.setPreferredSize(new java.awt.Dimension(100, 41));
+        btnOK.setFocusPainted(false);
+        btnOK.setPreferredSize(new java.awt.Dimension(100, 35));
         btnOK.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnOKActionPerformed(evt);
             }
         });
-        jPanel2.add(btnOK);
 
         btnCancel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         btnCancel.setText("Cancel");
-        btnCancel.setPreferredSize(new java.awt.Dimension(100, 41));
+        btnCancel.setFocusPainted(false);
+        btnCancel.setPreferredSize(new java.awt.Dimension(100, 35));
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCancelActionPerformed(evt);
             }
         });
-        jPanel2.add(btnCancel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -133,16 +142,21 @@ public class ConnectionInputDialog extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnOK, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(28, 28, 28))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnOK, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         pack();
@@ -170,15 +184,15 @@ private void sendData(DatagramSocket clientSocket, InetAddress ip, String data, 
                 JOptionPane.INFORMATION_MESSAGE,
                 new javax.swing.ImageIcon(getClass().getResource("/img/error.png")));
     }
-    private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
-        //check IP hợp lệ
+    private void connect(){
+          //check IP hợp lệ
         this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         Pattern patternIP = Pattern.compile("^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\\.(?!$)|$)){4}$");
         String stringIPA = textIP.getText().trim();
         boolean test1 = patternIP.matcher(stringIPA).matches() || stringIPA.equals("localhost");
         if (!test1) {
             showErrorMessage("Địa chỉ IP không hợp lệ", "Vui lòng nhập đúng định dạng của địa chỉ IP");
-
+            this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             return;
         }
 
@@ -192,16 +206,19 @@ private void sendData(DatagramSocket clientSocket, InetAddress ip, String data, 
                     InetAddress serverIP = InetAddress.getByName(stringIPA);
                     // truyền tín hiệu test kết nối
                     this.sendData(clientSocket, serverIP, "-1", port);
-                    System.out.println("sau send truoc rece");
                     // xem nhận được tín hiệu trả về không
                     String ketQua = this.receiveData(clientSocket);
-                    System.out.println("sau rece");
                     if (!ketQua.equals("Success!")) {
-                        System.out.println(ketQua);
+                        throw new IOException();
                     }
                 }
                 this.dispose();
-                new Client(textIP.getText(), port).setVisible(true);
+                if (this.isModal() && this.mainForm != null) {
+                    this.mainForm.refreshConnection(stringIPA, port);
+                }else{
+                    new Client(textIP.getText(), port).setVisible(true);
+                }
+                
 
             } else {
                 showErrorMessage("Port không hợp lệ", "Port phải nằm trong khoảng [0, 65535]");
@@ -209,15 +226,30 @@ private void sendData(DatagramSocket clientSocket, InetAddress ip, String data, 
         } catch (NumberFormatException ex) {
             showErrorMessage("Port không hợp lệ", "Vui lòng nhập Port là một số");
         } catch (IOException ex) {
-            showErrorMessage("Lỗi kết nối", "Không thể kết nối đến server. Vui lòng kiểm tra lại thông tin vừa nhập");
+            showErrorMessage("Lỗi kết nối", "Không thể kết nối đến server. Đó có thể là do: \n - Thông tin địa chỉ IP hoặc (và) port không chính xác.\n - Server chưa được khởi động.");
         } finally {
             this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
+    }
+    private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
+      this.connect();
     }//GEN-LAST:event_btnOKActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         this.dispose();
     }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void textIPKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textIPKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            this.connect();
+        }
+    }//GEN-LAST:event_textIPKeyPressed
+
+    private void textPortKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textPortKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            this.connect();
+        }
+    }//GEN-LAST:event_textPortKeyPressed
 
     /**
      * @param args the command line arguments
@@ -249,7 +281,7 @@ private void sendData(DatagramSocket clientSocket, InetAddress ip, String data, 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                ConnectionInputDialog dialog = new ConnectionInputDialog(new javax.swing.JFrame(), true);
+                ConnectionInputDialog dialog = new ConnectionInputDialog(null, true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -268,7 +300,6 @@ private void sendData(DatagramSocket clientSocket, InetAddress ip, String data, 
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JTextField textIP;
     private javax.swing.JTextField textPort;
     // End of variables declaration//GEN-END:variables

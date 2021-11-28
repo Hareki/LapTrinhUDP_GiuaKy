@@ -60,6 +60,7 @@ public class Client extends javax.swing.JFrame {
         areaMaHoa.requestFocus();
         setHyperLinkFormat(lblXemDe);
         setHyperLinkFormat(lbHyper);
+        setHyperLinkFormat(lblDoi);
         lblThongBao.setText("  ");
         this.getContentPane().setBackground(new Color(245, 245, 245));
         
@@ -71,17 +72,25 @@ public class Client extends javax.swing.JFrame {
         
         this.setIconImage(new javax.swing.ImageIcon(getClass().getResource("/img/data-server.png")).getImage());
     }
+    
+    public void refreshConnection(String stringIPA, int serverPort){
+        Client.STRING_IPA = stringIPA;
+        Client.SERVER_PORT = serverPort;
+        
+        this.lblIP.setText(stringIPA);
+        this.lblPort.setText(String.valueOf(Client.SERVER_PORT));
+    }
 
     private String deBai = "Xây chương trình giao diện socket client – server bằng java với giao thức UDP mã hóa và giải mã văn bản với thuật toán mã hóa Ceasar. "
             + "\nChương trình có thể thực hiện các chức năng sau: \n"
             + " 	Client: \n"
-            + "          -Cho phép nhập văn bản và khóa để mã hóa văn bản trước khi gửi lên server.\n"
-            + "          -Trao đổi khóa với server\n"
-            + "          -Nhận kết quả trả về từ server.\n"
+            + "          - Cho phép nhập văn bản và khóa để mã hóa văn bản trước khi gửi lên server.\n"
+            + "          - Trao đổi khóa với server\n"
+            + "          - Nhận kết quả trả về từ server.\n"
             + " 	Server:\n"
-            + "          -Nhận bản mã và khóa sau đó giải mã bản mã để tìm bản rõ.\n"
-            + "          -Sau khi giải mã xong thì đếm số lượng xuất hiện của các chữ cái trong bản rõ.\n"
-            + "          -Trả về số lượng xuất hiện của các chữ cái cho client";
+            + "          - Nhận bản mã và khóa sau đó giải mã bản mã để tìm bản rõ.\n"
+            + "          - Sau khi giải mã xong thì đếm số lượng xuất hiện của các chữ cái trong bản rõ.\n"
+            + "          - Trả về số lượng xuất hiện của các chữ cái cho client";
 
     private String quyTacMaHoa = "-Khoá từ 0 đến 25."
             + "\n- Nếu ký tự có dấu tiếng Việt thì sẽ loại bỏ dấu trước khi mã hóa."
@@ -134,6 +143,7 @@ public class Client extends javax.swing.JFrame {
         lblIP = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         lblPort = new javax.swing.JLabel();
+        lblDoi = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Đề tài 18");
@@ -152,6 +162,7 @@ public class Client extends javax.swing.JFrame {
         btnGiai.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/problem-solving.png"))); // NOI18N
         btnGiai.setText("Giải");
         btnGiai.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        btnGiai.setFocusPainted(false);
         btnGiai.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnGiaiActionPerformed(evt);
@@ -184,6 +195,7 @@ public class Client extends javax.swing.JFrame {
         btnChonFile.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         btnChonFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/folder.png"))); // NOI18N
         btnChonFile.setText("Chọn tệp văn bản");
+        btnChonFile.setFocusPainted(false);
         btnChonFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnChonFileActionPerformed(evt);
@@ -267,6 +279,7 @@ public class Client extends javax.swing.JFrame {
         btnLamMoiKetQua.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         btnLamMoiKetQua.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/clear.png"))); // NOI18N
         btnLamMoiKetQua.setText("Xóa kết quả");
+        btnLamMoiKetQua.setFocusPainted(false);
         btnLamMoiKetQua.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLamMoiKetQuaActionPerformed(evt);
@@ -286,6 +299,7 @@ public class Client extends javax.swing.JFrame {
         btnLamMoiKetQua1.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         btnLamMoiKetQua1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/copy.png"))); // NOI18N
         btnLamMoiKetQua1.setText("Copy");
+        btnLamMoiKetQua1.setFocusPainted(false);
         btnLamMoiKetQua1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLamMoiKetQua1ActionPerformed(evt);
@@ -356,7 +370,7 @@ public class Client extends javax.swing.JFrame {
             }
         });
 
-        jPanel3.setBackground(new java.awt.Color(150, 150, 150));
+        jPanel3.setBackground(new java.awt.Color(190, 190, 190));
         jPanel3.setForeground(new java.awt.Color(227, 227, 227));
         jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
 
@@ -379,6 +393,22 @@ public class Client extends javax.swing.JFrame {
         lblPort.setForeground(new java.awt.Color(255, 255, 255));
         lblPort.setText("8080");
         jPanel3.add(lblPort);
+
+        lblDoi.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        lblDoi.setForeground(new java.awt.Color(0, 109, 208));
+        lblDoi.setText("Đổi kết nối");
+        lblDoi.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblDoiMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                lblDoiMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                lblDoiMouseExited(evt);
+            }
+        });
+        jPanel3.add(lblDoi);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -669,6 +699,18 @@ public class Client extends javax.swing.JFrame {
         setLblThongBaoState(Message.copied);
     }//GEN-LAST:event_btnLamMoiKetQua1ActionPerformed
 
+    private void lblDoiMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDoiMouseClicked
+        new ConnectionInputDialog(this, true).setVisible(true);
+    }//GEN-LAST:event_lblDoiMouseClicked
+
+    private void lblDoiMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDoiMouseEntered
+        lblDoi.setForeground(hoverColor);
+    }//GEN-LAST:event_lblDoiMouseEntered
+
+    private void lblDoiMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDoiMouseExited
+        lblDoi.setForeground(idleColor);
+    }//GEN-LAST:event_lblDoiMouseExited
+
     /**
      * @param args the command line arguments
      */
@@ -726,6 +768,7 @@ public class Client extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lbHyper;
+    private javax.swing.JLabel lblDoi;
     public javax.swing.JLabel lblIP;
     public javax.swing.JLabel lblPort;
     private javax.swing.JLabel lblThongBao;
