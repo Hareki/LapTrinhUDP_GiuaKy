@@ -5,7 +5,7 @@ package ltm18;
  *
  * @author MinhPhuc
  */
-public class Caeser {
+public class CaeserCipher {
 
     public static String encrypt(String text, int key) {
         StringBuilder result = new StringBuilder();

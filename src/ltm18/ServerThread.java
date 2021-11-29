@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package ltm18.main;
+package ltm18;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import javax.swing.JTextArea;
-import ltm18.Caeser;
+import ltm18.CaeserCipher;
 import ltm18.StringUtils;
 
 /**
@@ -20,7 +20,7 @@ import ltm18.StringUtils;
  */
 public class ServerThread extends Thread {
 
-    public static int PORT = 8888;
+    public static int PORT;
     private static DatagramPacket inPacket;
     private static DatagramPacket outPacket;
     private static JTextArea LOG_TEXT;
@@ -29,9 +29,10 @@ public class ServerThread extends Thread {
     DateTimeFormatter formatter = DateTimeFormatter
             .ofPattern("dd/MM/yyyy HH:mm:ss");
 
-    public ServerThread(JTextArea logText) {
+    public ServerThread(JTextArea logText, int serverThreadPort) {
         super();
         ServerThread.LOG_TEXT = logText;
+        PORT = serverThreadPort;
         System.out.println("Đã khởi tạo");
     }
 
@@ -121,7 +122,7 @@ public class ServerThread extends Thread {
                         matMa.append(receiveData(socketServer));
                     }
 
-                    String vanBan = Caeser.decrypt(matMa.toString(), key);
+                    String vanBan = CaeserCipher.decrypt(matMa.toString(), key);
 
                     countLetters(vanBan);
                     String countLower = arrayToString(COUNT_LOWER);

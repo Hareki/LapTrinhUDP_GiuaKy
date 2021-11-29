@@ -5,10 +5,19 @@
  */
 package ltm18.main;
 
-import com.sun.xml.internal.ws.wsdl.writer.document.Message;
+import ltm18.ServerThread;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
+import java.awt.font.TextAttribute;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Map;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import ltm18.PortInputDialog;
 
 /**
  *
@@ -22,16 +31,45 @@ public class Server extends javax.swing.JFrame {
     public Server() {
         initComponents();
         this.setIconImage(new javax.swing.ImageIcon(getClass().getResource("/img/server.png")).getImage());
-        mode = ButtonMode.start;
+        mode = ButtonMode.STOP;
         this.setLocationRelativeTo(null);
+        setHyperLinkFormat(lblDoi);
+        try {
+            this.lblIP.setText(InetAddress.getLocalHost().getHostAddress());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
     }
-    private static final Color redStatusColor = new Color(236, 65, 52);
-    private static final Color greenStatusColor = new Color(45, 198, 109);
+
+    private static final Color HOVER_COLOR = new Color(0, 82, 157);
+    private static final Color IDLE_COLOR = new Color(0, 109, 208);
+    private static final Color ERROR_COLOR = new Color(236, 65, 52);
+    private static final Color SUCCESS_COLOR = new Color(45, 198, 109);
+    private static final Color PROCESSING_COLOR = new Color(78, 153, 255);
+    private static int serverThreadPort = 8888;
+
+    public static int getServerThreadPort() {
+        return serverThreadPort;
+    }
+
+    public static void setServerThreadPort(int serverThreadPort) {
+        Server.serverThreadPort = serverThreadPort;
+    }
+
+    private void setHyperLinkFormat(JLabel label) {
+        label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        Font font = label.getFont();
+        Map attributes = font.getAttributes();
+        attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+        label.setFont(font.deriveFont(attributes));
+    }
+
     enum ButtonMode {
-        start, stop
+        START, STOP
     }
-    ButtonMode mode;
-    ServerThread server;
+    private ButtonMode mode;
+    private ServerThread server;
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -173,45 +211,67 @@ public class Server extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    private boolean showConfirmMessage(String message, String title) {
+        return (JOptionPane.showConfirmDialog(this,
+                message,
+                title,
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                new javax.swing.ImageIcon(getClass().getResource("/img/infor.png"))) == JOptionPane.YES_OPTION);
+    }
 
+    public void refreshServer() {
+        if (mode == ButtonMode.START) {
+            if (showConfirmMessage("Server đang hoạt động, cần khởi động lại để chuyển sang port mới.\nKhởi động lại"
+                    + " ngay bây giờ?", "Xác nhận")) {
+                server.interrupt();
+                server = new ServerThread(areaLogText, serverThreadPort);
+                this.lblPort.setText(String.valueOf(serverThreadPort));
+                server.start();
+            }
+        }else{
+            this.lblPort.setText(String.valueOf(serverThreadPort));
+        }
+        
+    }
     private void btnPowerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPowerActionPerformed
-        if (mode == ButtonMode.start) {
-            mode = ButtonMode.stop;
-            btnPower.setText("Ngừng");
-            
-            lblStatus.setText("Server đang hoạt động");
-            lblStatus.setForeground(greenStatusColor);
-            server = new ServerThread(areaLogText);
-            server.start();
-        } else {
-            mode = ButtonMode.start;
+        if (mode == ButtonMode.START) {
+            mode = ButtonMode.STOP;
             btnPower.setText("Khởi động");
+            lblStatus.setText("Server chưa hoạt động");
             server.interrupt();
             areaLogText.setText(null);
-            lblStatus.setText("Server chưa hoạt động");
-            lblStatus.setForeground(redStatusColor);
+            lblStatus.setForeground(ERROR_COLOR);
+        } else if (mode == ButtonMode.STOP) {
+            mode = ButtonMode.START;
+            btnPower.setText("Ngừng");
+            lblStatus.setText("Server đang hoạt động");
+            lblStatus.setForeground(SUCCESS_COLOR);
+            server = new ServerThread(areaLogText, serverThreadPort);
+            server.start(); 
         }
+        this.lblPort.setText(String.valueOf(serverThreadPort));
     }//GEN-LAST:event_btnPowerActionPerformed
 
     private void lblDoiMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDoiMouseClicked
-
+        new PortInputDialog(this, true).setVisible(true);
     }//GEN-LAST:event_lblDoiMouseClicked
 
     private void lblDoiMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDoiMouseEntered
-
+        lblDoi.setForeground(HOVER_COLOR);
     }//GEN-LAST:event_lblDoiMouseEntered
 
     private void lblDoiMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDoiMouseExited
-
+        lblDoi.setForeground(IDLE_COLOR);
     }//GEN-LAST:event_lblDoiMouseExited
 
     private void btnCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCopyActionPerformed
         Toolkit.getDefaultToolkit()
-        .getSystemClipboard()
-        .setContents(
-            new StringSelection(areaLogText.getText()),
-            null
-        );
+                .getSystemClipboard()
+                .setContents(
+                        new StringSelection(areaLogText.getText()),
+                        null
+                );
     }//GEN-LAST:event_btnCopyActionPerformed
 
     /**

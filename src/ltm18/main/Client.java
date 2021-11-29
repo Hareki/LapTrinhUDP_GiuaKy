@@ -6,7 +6,6 @@ package ltm18.main;
 
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Dialog;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
@@ -34,7 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import ltm18.Caeser;
+import ltm18.CaeserCipher;
 import ltm18.ConnectionInputDialog;
 import ltm18.StringUtils;
 
@@ -95,32 +94,38 @@ public class Client extends javax.swing.JFrame {
     private String quyTacMaHoa = "-Khoá từ 0 đến 25."
             + "\n- Nếu ký tự có dấu tiếng Việt thì sẽ loại bỏ dấu trước khi mã hóa."
             + "\n- Chỉ mã hóa ký tự chữ alphabet, các ký tự còn lại (trừ ký tự dấu tiếng Việt) sẽ bỏ qua không mã hóa.";
-    private static final Color hoverColor = new Color(0, 82, 157);
-    private static final Color idleColor = new Color(0, 109, 208);
-    private static final Color errorColor = new Color(236, 65, 52);
-    private static final Color successColor = new Color(45, 198, 109);
-    private static final Color processingcolor = new Color(78, 153, 255);
-    private static final Color hoverColor2 = new Color(170, 211, 255);
-    private static final Color idleColor2 = new Color(175, 255, 244);
+    private static final Color HOVER_COLOR = new Color(0, 82, 157);
+    private static final Color IDLE_COLOR = new Color(0, 109, 208);
+    private static final Color ERROR_COLOR = new Color(236, 65, 52);
+    private static final Color SUCCESS_COLOR = new Color(45, 198, 109);
+    private static final Color PROCESSING_COLOR = new Color(78, 153, 255);
+
+    private void setHyperLinkFormat(JLabel label) {
+        label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        Font font = label.getFont();
+        Map attributes = font.getAttributes();
+        attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+        label.setFont(font.deriveFont(attributes));
+    }
 
     private enum Message {
-        serverError, success, processing, copied1, fileError, copied2
+        SERVER_ERROR, SUCCESS, PROCESSING, COPIED_1, FILE_ERROR, COPIED_2
     }
 
     private enum DialogMessage {
-        info, error
+        INFO, ERROR
     }
 
     private void showMessage(DialogMessage type, String message, String title) {
         switch (type) {
-            case info:
+            case INFO:
                 JOptionPane.showMessageDialog(this,
                         message,
                         title,
                         JOptionPane.INFORMATION_MESSAGE,
                         new javax.swing.ImageIcon(getClass().getResource("/img/infor.png")));
                 break;
-            case error:
+            case ERROR:
                 JOptionPane.showMessageDialog(this,
                         message,
                         title,
@@ -490,29 +495,29 @@ public class Client extends javax.swing.JFrame {
     public void setLblThongBaoState(Message state) {
 
         switch (state) {
-            case serverError:
+            case SERVER_ERROR:
                 lblThongBao.setText("Xảy ra lỗi! Server chưa được khởi động, sai thông tin kết nối (IP, Port) hoặc lỗi không xác định");
-                lblThongBao.setForeground(errorColor);
+                lblThongBao.setForeground(ERROR_COLOR);
                 break;
-            case fileError:
+            case FILE_ERROR:
                 lblThongBao.setText("Hiện tại không thể mở file này, vui lòng thử lại sau");
-                lblThongBao.setForeground(errorColor);
+                lblThongBao.setForeground(ERROR_COLOR);
                 break;
-            case processing:
+            case PROCESSING:
                 lblThongBao.setText("Đang chờ kết quả từ server...");
-                lblThongBao.setForeground(processingcolor);
+                lblThongBao.setForeground(PROCESSING_COLOR);
                 break;
-            case success:
+            case SUCCESS:
                 lblThongBao.setText("Nhận kết quả từ server thành công!");
-                lblThongBao.setForeground(successColor);
+                lblThongBao.setForeground(SUCCESS_COLOR);
                 break;
-            case copied1:
+            case COPIED_1:
                 lblThongBao.setText("Đã sao chép toàn bộ văn bản mã hóa vào bộ nhớ trong.");
-                lblThongBao.setForeground(successColor);
+                lblThongBao.setForeground(SUCCESS_COLOR);
                 break;
-            case copied2:
+            case COPIED_2:
                 lblThongBao.setText("Đã sao chép toàn bộ văn bản rõ vào bộ nhớ trong.");
-                lblThongBao.setForeground(successColor);
+                lblThongBao.setForeground(SUCCESS_COLOR);
                 break;
         }
 
@@ -629,13 +634,13 @@ public class Client extends javax.swing.JFrame {
             this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             String vanBan = areaVanBan.getText().trim();
             if (vanBan.isEmpty()) {
-                this.showMessage(DialogMessage.info, "Vui lòng nhập văn bản", "Thông báo");
+                this.showMessage(DialogMessage.INFO, "Vui lòng nhập văn bản", "Thông báo");
                 return;
             }
             Integer key = (Integer) spinKey.getValue();
 
             //Không chạy được, do không thể repaint ngay sau khi set text
-            setLblThongBaoState(Message.processing);
+            setLblThongBaoState(Message.PROCESSING);
 
             try (DatagramSocket clientSocket = new DatagramSocket()) {
                 InetAddress serverIP = InetAddress.getByName(STRING_IPA);
@@ -643,7 +648,7 @@ public class Client extends javax.swing.JFrame {
                 sendData(clientSocket, serverIP, key.toString());
                 // chuyển tiếng việt (nếu có) thành không dấu
                 vanBan = StringUtils.removeAccent(vanBan);
-                String cipher = Caeser.encrypt(vanBan, key);
+                String cipher = CaeserCipher.encrypt(vanBan, key);
                 areaMaHoa.setText(cipher);
                 // chuyển dữ liệu đi
                 sendLargeData(clientSocket, serverIP, cipher);
@@ -654,11 +659,11 @@ public class Client extends javax.swing.JFrame {
                 int[] countUpper = convertStringToIntArray(receiveData(clientSocket));
                 createResult(countUpper, true);
 
-                setLblThongBaoState(Message.success);
+                setLblThongBaoState(Message.SUCCESS);
             }
 
         } catch (SocketTimeoutException ex) {
-            setLblThongBaoState(Message.serverError);
+            setLblThongBaoState(Message.SERVER_ERROR);
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -680,9 +685,9 @@ public class Client extends javax.swing.JFrame {
                 String allText = new String(allBytes, StandardCharsets.UTF_8);
                 areaVanBan.setText(allText);
             } catch (IOException ex) {
-                this.setLblThongBaoState(Message.fileError);
+                this.setLblThongBaoState(Message.FILE_ERROR);
 
-                this.showMessage(DialogMessage.error, ex.getMessage(), "Lỗi đọc file");
+                this.showMessage(DialogMessage.ERROR, ex.getMessage(), "Lỗi đọc file");
             }
         }
     }//GEN-LAST:event_btnChonFileActionPerformed
@@ -699,37 +704,31 @@ public class Client extends javax.swing.JFrame {
         areaMaHoa.setText("");
         lblThongBao.setText("  ");
     }//GEN-LAST:event_btnLamMoiKetQuaActionPerformed
-    private void setHyperLinkFormat(JLabel label) {
-        label.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        Font font = label.getFont();
-        Map attributes = font.getAttributes();
-        attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-        label.setFont(font.deriveFont(attributes));
-    }
+
 
     private void lbHyperMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbHyperMouseEntered
-        lbHyper.setForeground(hoverColor);
+        lbHyper.setForeground(HOVER_COLOR);
     }//GEN-LAST:event_lbHyperMouseEntered
 
     private void lbHyperMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbHyperMouseExited
-        lbHyper.setForeground(idleColor);
+        lbHyper.setForeground(IDLE_COLOR);
     }//GEN-LAST:event_lbHyperMouseExited
 
     private void lbHyperMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbHyperMouseClicked
-        this.showMessage(DialogMessage.info, quyTacMaHoa, "Quy tắc mã hóa");
+        this.showMessage(DialogMessage.INFO, quyTacMaHoa, "Quy tắc mã hóa");
     }//GEN-LAST:event_lbHyperMouseClicked
 
     private void lblXemDeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblXemDeMouseClicked
 
-        this.showMessage(DialogMessage.info, deBai, "Đề 18");
+        this.showMessage(DialogMessage.INFO, deBai, "Đề 18");
     }//GEN-LAST:event_lblXemDeMouseClicked
 
     private void lblXemDeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblXemDeMouseEntered
-        lblXemDe.setForeground(hoverColor);
+        lblXemDe.setForeground(HOVER_COLOR);
     }//GEN-LAST:event_lblXemDeMouseEntered
 
     private void lblXemDeMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblXemDeMouseExited
-        lblXemDe.setForeground(idleColor);
+        lblXemDe.setForeground(IDLE_COLOR);
     }//GEN-LAST:event_lblXemDeMouseExited
 
     private void btnCopy2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCopy2ActionPerformed
@@ -739,7 +738,7 @@ public class Client extends javax.swing.JFrame {
                         new StringSelection(areaMaHoa.getText()),
                         null
                 );
-        setLblThongBaoState(Message.copied1);
+        setLblThongBaoState(Message.COPIED_1);
     }//GEN-LAST:event_btnCopy2ActionPerformed
 
     private void lblDoiMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDoiMouseClicked
@@ -747,11 +746,11 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_lblDoiMouseClicked
 
     private void lblDoiMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDoiMouseEntered
-        lblDoi.setForeground(hoverColor);
+        lblDoi.setForeground(HOVER_COLOR);
     }//GEN-LAST:event_lblDoiMouseEntered
 
     private void lblDoiMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDoiMouseExited
-        lblDoi.setForeground(idleColor);
+        lblDoi.setForeground(IDLE_COLOR);
     }//GEN-LAST:event_lblDoiMouseExited
 
     private void btnCopy1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCopy1ActionPerformed
@@ -761,7 +760,7 @@ public class Client extends javax.swing.JFrame {
                         new StringSelection(areaVanBan.getText()),
                         null
                 );
-        setLblThongBaoState(Message.copied1);
+        setLblThongBaoState(Message.COPIED_1);
     }//GEN-LAST:event_btnCopy1ActionPerformed
 
     /**
