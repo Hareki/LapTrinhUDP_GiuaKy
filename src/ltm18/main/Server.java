@@ -225,6 +225,7 @@ public class Server extends javax.swing.JFrame {
             if (showConfirmMessage("Server đang hoạt động, cần khởi động lại để chuyển sang port mới.\nKhởi động lại"
                     + " ngay bây giờ?", "Xác nhận")) {
                 server.interrupt();
+                areaLogText.setText(null);
                 server = new ServerThread(areaLogText, serverThreadPort);
                 this.lblPort.setText(String.valueOf(serverThreadPort));
                 server.start();
