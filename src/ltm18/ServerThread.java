@@ -20,23 +20,23 @@ import ltm18.StringUtils;
  */
 public class ServerThread extends Thread {
 
-    public static int PORT;
-    private static DatagramPacket inPacket;
-    private static DatagramPacket outPacket;
-    private static JTextArea LOG_TEXT;
-    private static boolean listening = true;
-    private static DatagramSocket mainSocket;
-    DateTimeFormatter formatter = DateTimeFormatter
+    public int PORT;
+    private DatagramPacket inPacket;
+    private DatagramPacket outPacket;
+    private JTextArea areaLogText;
+    private boolean listening = true;
+    private DatagramSocket mainSocket;
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
             .ofPattern("dd/MM/yyyy HH:mm:ss");
 
     public ServerThread(JTextArea logText, int serverThreadPort) {
         super();
-        ServerThread.LOG_TEXT = logText;
+        areaLogText = logText;
         PORT = serverThreadPort;
         System.out.println("Đã khởi tạo");
     }
 
-    private static String receiveData(DatagramSocket socketServer) throws IOException {
+    private String receiveData(DatagramSocket socketServer) throws IOException {
         byte[] receive = new byte[1024];
         inPacket = new DatagramPacket(receive, receive.length);
         socketServer.receive(inPacket);
@@ -44,7 +44,7 @@ public class ServerThread extends Thread {
         return ketQua;
     }
 
-    private static void sendData(DatagramSocket socketServer, String data) throws IOException {
+    private void sendData(DatagramSocket socketServer, String data) throws IOException {
         byte[] outData = data.getBytes();
         outPacket = new DatagramPacket(outData, outData.length);
         outPacket.setAddress(inPacket.getAddress());
@@ -93,29 +93,29 @@ public class ServerThread extends Thread {
 
     @Override
     public void run() {
-        LOG_TEXT.append(">> Server đã khởi động, port = " + PORT);
+        areaLogText.append(">> Server đã khởi động, port = " + PORT);
         while (listening) {
             try {
                 try (DatagramSocket socketServer = new DatagramSocket(PORT)) {
                     mainSocket = socketServer;
                     int key = Integer.parseInt(receiveData(socketServer));
-                    LOG_TEXT.append("\n----------------");
-                    LOG_TEXT.append("\nĐang chờ nhận thông tin từ client...");
-                    LOG_TEXT.append("\n----------------");
+                    areaLogText.append("\n----------------");
+                    areaLogText.append("\nĐang chờ nhận thông tin từ client...");
+                    areaLogText.append("\n----------------");
                     LocalDateTime localDateTime = LocalDateTime.now();
-                    LOG_TEXT.append("\n" + localDateTime.format(formatter));
-                    LOG_TEXT.append("\nThông tin client: ");
-                    LOG_TEXT.append("\n  - IP: " + inPacket.getAddress().toString());
-                    LOG_TEXT.append("\n  - Port: " + inPacket.getPort());
+                    areaLogText.append("\n" + localDateTime.format(DATE_TIME_FORMATTER));
+                    areaLogText.append("\nThông tin client: ");
+                    areaLogText.append("\n  - IP: " + inPacket.getAddress().toString());
+                    areaLogText.append("\n  - Port: " + inPacket.getPort());
                     if (key == -1) {//test kết nối
-                        LOG_TEXT.append("\nĐã nhận được tín hiểu kiểm tra thử kết nối");
-                        LOG_TEXT.append("\nKết thúc");
+                        areaLogText.append("\nĐã nhận được tín hiểu kiểm tra thử kết nối");
+                        areaLogText.append("\nKết thúc");
                         sendData(socketServer, "Success!");
                         continue;
                     }
-                    LOG_TEXT.append("\nKhóa nhận được: " + key);
+                    areaLogText.append("\nKhóa nhận được: " + key);
                     int soMau = Integer.parseInt(receiveData(socketServer));
-                    LOG_TEXT.append("\nSố mẫu: " + soMau);
+                    areaLogText.append("\nSố mẫu: " + soMau);
                     System.out.println(soMau);
                     StringBuilder matMa = new StringBuilder();
                     for (int i = 0; i < soMau; i++) {
@@ -130,8 +130,8 @@ public class ServerThread extends Thread {
 
                     sendData(socketServer, countLower);
                     sendData(socketServer, countUpper);
-                    LOG_TEXT.append("\nĐã gửi trả kết quả đếm chữ cái");
-                    LOG_TEXT.append("\nKết thúc");
+                    areaLogText.append("\nĐã gửi trả kết quả đếm chữ cái");
+                    areaLogText.append("\nKết thúc");
                 }
             } catch (Exception ex) {
 

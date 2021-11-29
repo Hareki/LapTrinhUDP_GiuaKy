@@ -28,12 +28,13 @@ public class ConnectionInputDialog extends javax.swing.JDialog {
      */
     private Client mainForm = null;
 
-    public ConnectionInputDialog(java.awt.Frame parent, boolean modal) {
+    public ConnectionInputDialog(java.awt.Frame parent, boolean modal, String stringIPA) {
         super(parent, modal);
         initComponents();
         if (parent != null) {
             this.mainForm = (Client) parent;
         }
+        this.textIP.setText(stringIPA);
         this.setLocationRelativeTo(null);
         this.setIconImage(new javax.swing.ImageIcon(getClass().getResource("/img/client.png")).getImage());
     }
@@ -288,7 +289,7 @@ private void sendData(DatagramSocket clientSocket, InetAddress ip, String data, 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                ConnectionInputDialog dialog = new ConnectionInputDialog(null, true);
+                ConnectionInputDialog dialog = new ConnectionInputDialog();
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

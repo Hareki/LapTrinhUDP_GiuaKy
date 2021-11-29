@@ -189,8 +189,7 @@ public class PortInputDialog extends javax.swing.JDialog {
             int port = Integer.parseInt(this.textPort.getText());
             if (port >= MIN_PORT_NUMBER && port <= MAX_PORT_NUMBER) {
                 if (available(port)) {
-                    Server.setServerThreadPort(port);
-                    server.refreshServer();
+                    server.setServerThreadPort(port);
                     this.dispose();
                 }else{
                     showErrorMessage("Port không hợp lệ", "Port đang được sử dụng, vui lòng chọn port khác");

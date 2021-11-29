@@ -12,9 +12,16 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.font.TextAttribute;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
+import java.util.Properties;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import ltm18.PortInputDialog;
@@ -30,33 +37,47 @@ public class Server extends javax.swing.JFrame {
      */
     public Server() {
         initComponents();
+        
         this.setIconImage(new javax.swing.ImageIcon(getClass().getResource("/img/server.png")).getImage());
         mode = ButtonMode.STOP;
         this.setLocationRelativeTo(null);
         setHyperLinkFormat(lblDoi);
+        
+        properties = new Properties();
+        readProperty();
+        serverThreadPort = Integer.parseInt(properties.getProperty(SERVER_PORT_PROPERTY_KEY));
+        lblPort.setText(String.valueOf(serverThreadPort));
+        
+        
         try {
             this.lblIP.setText(InetAddress.getLocalHost().getHostAddress());
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-
+        
     }
+    
 
+    
     private static final Color HOVER_COLOR = new Color(0, 82, 157);
     private static final Color IDLE_COLOR = new Color(0, 109, 208);
     private static final Color ERROR_COLOR = new Color(236, 65, 52);
     private static final Color SUCCESS_COLOR = new Color(45, 198, 109);
     private static final Color PROCESSING_COLOR = new Color(78, 153, 255);
-    private static int serverThreadPort = 8888;
-
-    public static int getServerThreadPort() {
+    private  int serverThreadPort;
+    
+    public  int getServerThreadPort() {
         return serverThreadPort;
     }
-
-    public static void setServerThreadPort(int serverThreadPort) {
-        Server.serverThreadPort = serverThreadPort;
+    
+    public  void setServerThreadPort(int serverThreadPort) {
+        this.serverThreadPort = serverThreadPort;
+        refreshServer();
+        setPortProperty(serverThreadPort);
+        writeCurrentProperty();
+        
     }
-
+    
     private void setHyperLinkFormat(JLabel label) {
         label.setCursor(new Cursor(Cursor.HAND_CURSOR));
         Font font = label.getFont();
@@ -64,12 +85,49 @@ public class Server extends javax.swing.JFrame {
         attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
         label.setFont(font.deriveFont(attributes));
     }
-
+    
     enum ButtonMode {
         START, STOP
     }
     private ButtonMode mode;
     private ServerThread server;
+    
+    public static final String SERVER_PORT_PROPERTY_KEY = "port";
+    private static final String CONFIG_PATH = "setting.properties";
+    private  Properties properties;
+    
+    public void writeDefaultProperty() {
+        try (OutputStream output = new FileOutputStream(CONFIG_PATH)) {
+            properties.setProperty(SERVER_PORT_PROPERTY_KEY, "8888");
+            properties.store(output, null);
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+    }
+    
+    public void writeCurrentProperty() {
+        try (OutputStream output = new FileOutputStream(CONFIG_PATH)) {
+            properties.store(output, null);
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+    }
+    
+    private void readProperty() {
+        if (!new File(CONFIG_PATH).exists()) {
+            writeDefaultProperty();
+            return;
+        }
+        try (InputStream inputStream = new FileInputStream(CONFIG_PATH)) {
+            properties.load(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void setPortProperty(int port) {
+        properties.setProperty(SERVER_PORT_PROPERTY_KEY, String.valueOf(port));
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -219,7 +277,7 @@ public class Server extends javax.swing.JFrame {
                 JOptionPane.INFORMATION_MESSAGE,
                 new javax.swing.ImageIcon(getClass().getResource("/img/infor.png"))) == JOptionPane.YES_OPTION);
     }
-
+    
     public void refreshServer() {
         if (mode == ButtonMode.START) {
             if (showConfirmMessage("Server đang hoạt động, cần khởi động lại để chuyển sang port mới.\nKhởi động lại"
@@ -230,7 +288,7 @@ public class Server extends javax.swing.JFrame {
                 this.lblPort.setText(String.valueOf(serverThreadPort));
                 server.start();
             }
-        }else{
+        } else {
             this.lblPort.setText(String.valueOf(serverThreadPort));
         }
         
@@ -249,7 +307,7 @@ public class Server extends javax.swing.JFrame {
             lblStatus.setText("Server đang hoạt động");
             lblStatus.setForeground(SUCCESS_COLOR);
             server = new ServerThread(areaLogText, serverThreadPort);
-            server.start(); 
+            server.start();
         }
         this.lblPort.setText(String.valueOf(serverThreadPort));
     }//GEN-LAST:event_btnPowerActionPerformed

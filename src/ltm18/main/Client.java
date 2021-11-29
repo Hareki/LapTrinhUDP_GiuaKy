@@ -50,8 +50,8 @@ public class Client extends javax.swing.JFrame {
     private static final Color VERY_LIGHT_YELLOW = new Color(255, 255, 204);
     private static final Border LABEL_BORDER = BorderFactory.createLineBorder(Color.darkGray, BORDER_GAP);
 
-    public static String STRING_IPA;
-    public static int SERVER_PORT;
+    public String stringIPA;
+    public int serverPort;
 
     public Client(String stringIPA, int serverPort) {
         initComponents();
@@ -63,24 +63,24 @@ public class Client extends javax.swing.JFrame {
         lblThongBao.setText("  ");
         this.getContentPane().setBackground(new Color(245, 245, 245));
 
-        Client.STRING_IPA = stringIPA;
-        Client.SERVER_PORT = serverPort;
+        this.stringIPA = stringIPA;
+        this.serverPort = serverPort;
 
         this.lblIP.setText(stringIPA);
-        this.lblPort.setText(String.valueOf(Client.SERVER_PORT));
+        this.lblPort.setText(String.valueOf(this.serverPort));
 
         this.setIconImage(new javax.swing.ImageIcon(getClass().getResource("/img/client.png")).getImage());
     }
 
     public void refreshConnection(String stringIPA, int serverPort) {
-        Client.STRING_IPA = stringIPA;
-        Client.SERVER_PORT = serverPort;
+        this.stringIPA = stringIPA;
+        this.serverPort = serverPort;
 
         this.lblIP.setText(stringIPA);
-        this.lblPort.setText(String.valueOf(Client.SERVER_PORT));
+        this.lblPort.setText(String.valueOf(this.serverPort));
     }
 
-    private String deBai = "Xây chương trình giao diện socket client – server bằng java với giao thức UDP mã hóa và giải mã văn bản với thuật toán mã hóa Ceasar. "
+    private static final String DE_BAI = "Xây chương trình giao diện socket client – server bằng java với giao thức UDP mã hóa và giải mã văn bản với thuật toán mã hóa Ceasar. "
             + "\nChương trình có thể thực hiện các chức năng sau: \n"
             + " 	Client: \n"
             + "          - Cho phép nhập văn bản và khóa để mã hóa văn bản trước khi gửi lên server.\n"
@@ -91,7 +91,7 @@ public class Client extends javax.swing.JFrame {
             + "          - Sau khi giải mã xong thì đếm số lượng xuất hiện của các chữ cái trong bản rõ.\n"
             + "          - Trả về số lượng xuất hiện của các chữ cái cho client";
 
-    private String quyTacMaHoa = "-Khoá từ 0 đến 25."
+    private static final String QUY_TAC_MA_HOA = "-Khoá từ 0 đến 25."
             + "\n- Nếu ký tự có dấu tiếng Việt thì sẽ loại bỏ dấu trước khi mã hóa."
             + "\n- Chỉ mã hóa ký tự chữ alphabet, các ký tự còn lại (trừ ký tự dấu tiếng Việt) sẽ bỏ qua không mã hóa.";
     private static final Color HOVER_COLOR = new Color(0, 82, 157);
@@ -526,7 +526,7 @@ public class Client extends javax.swing.JFrame {
     private void sendData(DatagramSocket clientSocket, InetAddress ip, String data) throws IOException {
         System.out.println("send to IP: " + ip.toString());
         byte[] mang = data.getBytes();
-        DatagramPacket output = new DatagramPacket(mang, mang.length, ip, Client.SERVER_PORT);
+        DatagramPacket output = new DatagramPacket(mang, mang.length, ip, serverPort);
         clientSocket.send(output);
     }
 
@@ -643,7 +643,7 @@ public class Client extends javax.swing.JFrame {
             setLblThongBaoState(Message.PROCESSING);
 
             try (DatagramSocket clientSocket = new DatagramSocket()) {
-                InetAddress serverIP = InetAddress.getByName(STRING_IPA);
+                InetAddress serverIP = InetAddress.getByName(stringIPA);
                 // chuyển khoá đi trước
                 sendData(clientSocket, serverIP, key.toString());
                 // chuyển tiếng việt (nếu có) thành không dấu
@@ -715,12 +715,12 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_lbHyperMouseExited
 
     private void lbHyperMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbHyperMouseClicked
-        this.showMessage(DialogMessage.INFO, quyTacMaHoa, "Quy tắc mã hóa");
+        this.showMessage(DialogMessage.INFO, QUY_TAC_MA_HOA, "Quy tắc mã hóa");
     }//GEN-LAST:event_lbHyperMouseClicked
 
     private void lblXemDeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblXemDeMouseClicked
 
-        this.showMessage(DialogMessage.INFO, deBai, "Đề 18");
+        this.showMessage(DialogMessage.INFO, DE_BAI, "Đề 18");
     }//GEN-LAST:event_lblXemDeMouseClicked
 
     private void lblXemDeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblXemDeMouseEntered
@@ -742,7 +742,7 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCopy2ActionPerformed
 
     private void lblDoiMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDoiMouseClicked
-        new ConnectionInputDialog(this, true).setVisible(true);
+        new ConnectionInputDialog(this, true, this.stringIPA).setVisible(true);
     }//GEN-LAST:event_lblDoiMouseClicked
 
     private void lblDoiMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDoiMouseEntered
