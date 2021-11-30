@@ -52,14 +52,13 @@ public class Server extends javax.swing.JFrame {
         serverThreadPort = Integer.parseInt(properties.getProperty(SERVER_PORT_PROPERTY_KEY));
 
         if (!PortInputDialog.available(serverThreadPort)) {
-            try {//"Port được lưu cấu hình " + oldPort + " đang được sử dụng, tự động đổi port của server" + " sang " + serverThreadPort
-                
+            try {
                 int oldPort = serverThreadPort;
                 DatagramSocket socketTest = new DatagramSocket();
                 serverThreadPort = socketTest.getLocalPort();
-                showInforMessage("Port được lưu cấu hình " + oldPort + " đang được sử dụng, tự động đổi port của server" + " sang " + serverThreadPort, "Thông báo");
-                setPortProperty(serverThreadPort);
-                writeCurrentProperty();
+                showInforMessage("Port được lưu cấu hình " + oldPort + " đang được sử dụng, tự động đổi port của server" + " ngẫu nhiên sang port trống " + serverThreadPort, "Thông báo");
+//                setPortProperty(serverThreadPort);
+//                writeCurrentProperty();
                 socketTest.close();
             } catch (SocketException ex) {
                 ex.printStackTrace();
