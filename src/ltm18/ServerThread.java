@@ -82,7 +82,9 @@ public class ServerThread extends Thread {
     @Override
     public void interrupt() {
         listening = false;
-        mainSocket.close();
+        if (mainSocket != null) {
+            mainSocket.close();
+        }
     }
 
     @Override
